@@ -1,7 +1,6 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const express = require("express");
 const axios = require("axios");
-const TelegramBot = require('node-telegram-bot-api');
 const settings = require("./settings");
 
 const app = express();
@@ -25,100 +24,6 @@ function runtime() {
     return `${hours}h ${minutes}m ${secs}s`;
 }
 
-// =========================
-// TELEGRAM BOT
-// =========================
-const tgBot = new TelegramBot(settings.telegramToken, { polling: true });
-
-tgBot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    tgBot.sendMessage(chatId, 
-        `*${settings.botName}*\n\n` +
-        `Welcome to MA CRASHER!\n\n` +
-        `*Commands:*\n` +
-        `/status - Bot status\n` +
-        `/owner - Owner details\n` +
-        `/help - Help menu\n\n` +
-        `© ${settings.footer}`
-    );
-});
-
-tgBot.onText(/\/status/, (msg) => {
-    const chatId = msg.chat.id;
-    tgBot.sendMessage(chatId, 
-        `*BOT STATUS*\n\n` +
-        `Status: ${status}\n` +
-        `Connected: ${isConnected ? "Yes" : "No"}\n` +
-        `Uptime: ${runtime()}\n` +
-        `Messages: ${messageCount}\n\n` +
-        `© ${settings.footer}`
-    );
-});
-
-tgBot.onText(/\/owner/, (msg) => {
-    const chatId = msg.chat.id;
-    tgBot.sendMessage(chatId, 
-        `👑 *OWNER*\n\n` +
-        `Name: ${settings.botOwner}\n` +
-        `Team: ${settings.teamName}\n` +
-        `Number: ${settings.ownerNumber}\n\n` +
-        `© ${settings.footer}`
-    );
-});
-
-tgBot.onText(/\/help/, (msg) => {
-    const chatId = msg.chat.id;
-    tgBot.sendMessage(chatId, 
-        `*HELP MENU*\n\n` +
-        `/start - Start bot\n` +
-        `/status - Bot status\n` +
-        `/owner - Owner details\n` +
-        `/help - Help menu\n\n` +
-        `© ${settings.footer}`
-    );
-});
-
-// Telegram Number Handler
-tgBot.on('message', async (msg) => {
-    const chatId = msg.chat.id;
-    const text = msg.text;
-
-    if (!text || text.startsWith('/')) return;
-
-    if (/^\d+$/.test(text)) {
-        const number = text.replace(/\D/g, "");
-        const fullNumber = number.startsWith("0") ? "92" + number.substring(1) : number;
-        
-        tgBot.sendMessage(chatId, 
-            `*Processing...*\n\n` +
-            `Pairing code for: ${fullNumber}`
-        );
-        
-        try {
-            if (client) {
-                const pairingCode = await client.requestPairingCode(fullNumber, true);
-                tgBot.sendMessage(chatId, 
-                    `*PAIRING CODE:*\n\n` +
-                    `\`${pairingCode}\`\n\n` +
-                    `WhatsApp → Settings → Linked Devices → Link a Device\n\n` +
-                    `© ${settings.footer}`
-                );
-            } else {
-                tgBot.sendMessage(chatId, 
-                    `❌ Bot not initialized yet!`
-                );
-            }
-        } catch (error) {
-            tgBot.sendMessage(chatId, 
-                `❌ Error: ${error.message}`
-            );
-        }
-    }
-});
-
-// =========================
-// WHATSAPP BOT
-// =========================
 async function startBot() {
     console.log("Initializing WhatsApp...");
 

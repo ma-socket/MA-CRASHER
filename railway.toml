@@ -1,6 +1,9 @@
 [build]
 builder = "NIXPACKS"
 
+[build]
+installCommand = "npm install"
+
 [deploy]
 startCommand = "node index.js"
 healthcheckPath = "/api/status"

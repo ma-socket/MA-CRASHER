@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MA CRASHER 2.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #001a1a 50%, #0a0a0a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas#matrixCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            background: rgba(10, 20, 20, 0.92);
+            border: 1px solid #00ffc8;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.4), 0 0 40px rgba(0, 255, 200, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            padding: 25px 20px;
+            text-align: center;
+            background: linear-gradient(180deg, #001a1a 0%, #002a2a 100%);
+            border-bottom: 2px solid #00ffc8;
+        }
+
+        .header img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid #00ffc8;
+            box-shadow: 0 0 20px #00ffc8;
+            margin-bottom: 10px;
+        }
+
+        .glitch {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            color: #00ffc8;
+            text-shadow: 0 0 10px #00ffc8, 0 0 20px #00ffc8;
+            letter-spacing: 3px;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { text-shadow: 2px 2px 0 #ff00c1, -2px -2px 0 #00ffff; }
+            25% { text-shadow: -2px 2px 0 #ff00c1, 2px -2px 0 #00ffff; }
+            50% { text-shadow: 2px -2px 0 #ff00c1, -2px 2px 0 #00ffff; }
+            75% { text-shadow: -2px -2px 0 #ff00c1, 2px 2px 0 #00ffff; }
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #00ffc8;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 25px 20px 30px;
+            background: rgba(0, 20, 20, 0.95);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #00ffc8;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .phone-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .country-select {
+            flex: 0 0 80px;
+            padding: 10px 8px;
+            border: 1px solid #00ffc8;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #002a2a;
+            color: #00ffc8;
+            outline: none;
+            transition: all 0.3s;
+            appearance: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .country-select:hover, .country-select:focus {
+            border-color: #ff00c1;
+            box-shadow: 0 0 10px #ff00c1;
+        }
+
+        .phone-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #00ffc8;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #002a2a;
+            color: #00ffc8;
+            outline: none;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .phone-input:focus {
+            border-color: #ff00c1;
+            box-shadow: 0 0 10px #ff00c1;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: #002a2a;
+            color: #00ffc8;
+            border: 1px solid #00ffc8;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .generate-btn:hover {
+            background: #00ffc8;
+            color: #001a1a;
+            box-shadow: 0 0 20px #00ffc8;
+            transform: translateY(-2px);
+        }
+
+        .generate-btn:disabled {
+            background: #333;
+            color: #666;
+            border-color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #002a2a;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #ff00c1;
+            box-shadow: 0 0 15px rgba(255, 0, 193, 0.3);
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffc8;
+            text-shadow: 0 0 10px #00ffc8;
+            letter-spacing: 4px;
+            margin: 10px 0;
+            user-select: all;
+        }
+
+        .copy-btn {
+            background: #001a1a;
+            color: #00ffc8;
+            border: 1px solid #00ffc8;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+
+        .copy-btn:hover {
+            background: #00ffc8;
+            color: #001a1a;
+            box-shadow: 0 0 15px #00ffc8;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #0a0a0a;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            border: 1px solid #25d366;
+            box-shadow: 0 0 10px #25d366;
+        }
+
+        .whatsapp-btn:hover {
+            background: #1eb857;
+            transform: translateY(-2px);
+        }
+
+        .telegram-btn {
+            background: #0088cc;
+            border: 1px solid #0088cc;
+            box-shadow: 0 0 10px #0088cc;
+        }
+
+        .telegram-btn:hover {
+            background: #0077b5;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: #001a1a;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #00ffc8;
+            border-top: 1px solid #00ffc8;
+        }
+
+        .footer a {
+            color: #00ffc8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #00ffc8;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInRight 0.4s ease, fadeOut 0.4s ease 2.6s forwards;
+            max-width: 350px;
+            font-size: 14px;
+        }
+
+        .toast i {
+            font-size: 18px;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            border: 1px solid #4caf50;
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #c62828, #ef5350);
+            border: 1px solid #ef5350;
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, #4527a0, #7e57c2);
+            border: 1px solid #7e57c2;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    <div id="toast-container"></div>
+
+    <div class="container">
+        <div class="header">
+            <img src="https://i.postimg.cc/050FQZ89/Chat-GPT-Image-Aug-26-2026-03-07-12-PM.png" alt="MA CRASHER 2.0 Logo">
+            <h1 class="glitch">MA CRASHER 2.0</h1>
+            <p>BY MUHAMMAD AYAN</p>
+        </div>
+        <div class="content">
+            <div class="form-group">
+                <label><i class="fas fa-globe"></i> Select Country</label>
+                <div class="phone-row">
+                    <select id="country" class="country-select"></select>
+                    <input type="tel" id="phoneNumber" class="phone-input" placeholder="Enter phone number">
+                </div>
+            </div>
+
+            <button id="generateBtn" class="generate-btn">
+                <i class="fas fa-key"></i> Generate Pairing Code
+            </button>
+
+            <div id="resultBox" class="result-box">
+                <h3>YOUR PAIRING CODE</h3>
+                <div class="code-text" id="pairingCode"></div>
+                <button id="copyBtn" class="copy-btn">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+            </div>
+
+            <div class="social-links">
+                <a href="https://whatsapp.com/channel/0029VaGiJKfIiRoybPBMTy38" target="_blank" class="social-btn whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Channel
+                </a>
+                <a href="https://t.me/ma_developers" target="_blank" class="social-btn telegram-btn">
+                    <i class="fab fa-telegram"></i> Telegram Bot
+                </a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Need help? Contact support:</p>
+            <p>
+                <a href="https://wa.me/923702723151" target="_blank"><i class="fab fa-whatsapp"></i> +92 370 2723151</a>
+                &nbsp;|&nbsp;
+                <a href="https://wa.me/923312044136" target="_blank"><i class="fab fa-whatsapp"></i> +92 331 2044136</a>
+            </p>
+            <p style="margin-top:6px;">© 2026 MA Developers. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = Array(columns).fill(1);
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+=<>?/\\|{}[]()~^';
+        const colors = ['#00ffc8', '#00e5b0', '#00c8a0', '#00b090', '#00ffaa'];
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = fontSize + 'px Share Tech Mono, monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                ctx.fillStyle = color;
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                ctx.fillText(char, x, y);
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            let icon = '';
+            if (type === 'success') icon = '<i class="fas fa-check-circle"></i>';
+            else if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i>';
+            else icon = '<i class="fas fa-info-circle"></i>';
+            toast.innerHTML = `${icon} ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        const countries = [
+            { name: "Pakistan", code: "PK", dial: "+92" },
+            { name: "India", code: "IN", dial: "+91" },
+            { name: "United States", code: "US", dial: "+1" },
+            { name: "United Kingdom", code: "GB", dial: "+44" },
+            { name: "UAE", code: "AE", dial: "+971" },
+            { name: "Saudi Arabia", code: "SA", dial: "+966" },
+            { name: "Bangladesh", code: "BD", dial: "+880" },
+            { name: "Afghanistan", code: "AF", dial: "+93" },
+            { name: "Canada", code: "CA", dial: "+1" },
+            { name: "Australia", code: "AU", dial: "+61" },
+            { name: "Germany", code: "DE", dial: "+49" },
+            { name: "France", code: "FR", dial: "+33" },
+            { name: "Italy", code: "IT", dial: "+39" },
+            { name: "Spain", code: "ES", dial: "+34" },
+            { name: "Turkey", code: "TR", dial: "+90" },
+            { name: "Egypt", code: "EG", dial: "+20" },
+            { name: "Nigeria", code: "NG", dial: "+234" },
+            { name: "South Africa", code: "ZA", dial: "+27" },
+            { name: "Indonesia", code: "ID", dial: "+62" },
+            { name: "Malaysia", code: "MY", dial: "+60" },
+            { name: "Philippines", code: "PH", dial: "+63" },
+            { name: "Singapore", code: "SG", dial: "+65" },
+            { name: "Thailand", code: "TH", dial: "+66" },
+            { name: "Vietnam", code: "VN", dial: "+84" },
+            { name: "China", code: "CN", dial: "+86" },
+            { name: "Japan", code: "JP", dial: "+81" },
+            { name: "South Korea", code: "KR", dial: "+82" },
+            { name: "Brazil", code: "BR", dial: "+55" },
+            { name: "Mexico", code: "MX", dial: "+52" },
+            { name: "Russia", code: "RU", dial: "+7" }
+        ];
+
+        const countrySelect = document.getElementById('country');
+        const phoneInput = document.getElementById('phoneNumber');
+        const generateBtn = document.getElementById('generateBtn');
+        const resultBox = document.getElementById('resultBox');
+        const pairingCodeSpan = document.getElementById('pairingCode');
+        const copyBtn = document.getElementById('copyBtn');
+
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country.dial;
+            option.textContent = country.dial;
+            option.title = `${country.name} (${country.dial})`;
+            countrySelect.appendChild(option);
+        });
+
+        const defaultCountry = countries.find(c => c.code === 'PK');
+        if (defaultCountry) countrySelect.value = defaultCountry.dial;
+
+        function updatePhonePlaceholder() {
+            const dial = countrySelect.value;
+            phoneInput.placeholder = `Number (without ${dial})`;
+        }
+        countrySelect.addEventListener('change', updatePhonePlaceholder);
+        updatePhonePlaceholder();
+
+        generateBtn.addEventListener('click', async () => {
+            const dialCode = countrySelect.value.replace(/[^0-9]/g, '');
+            const phoneDigits = phoneInput.value.trim().replace(/[^0-9]/g, '');
+
+            if (!phoneDigits) {
+                showToast('Please enter a phone number.', 'error');
+                return;
+            }
+
+            const fullNumber = dialCode + phoneDigits;
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+            resultBox.classList.remove('show');
+
+            try {
+                // FIX: window.location.origin use karein
+                const response = await fetch(window.location.origin + '/api/pair', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: fullNumber })
+                });
+                const data = await response.json();
+
+                if (data.success && data.pairingCode) {
+                    pairingCodeSpan.textContent = data.pairingCode;
+                    resultBox.classList.add('show');
+                    showToast('Pairing code generated successfully!', 'success');
+                } else if (data.message) {
+                    showToast(data.message, 'error');
+                    resultBox.classList.remove('show');
+                } else {
+                    showToast('Unexpected response. Please try again.', 'error');
+                    resultBox.classList.remove('show');
+                }
+            } catch (error) {
+                showToast('Network error. Please check your connection.', 'error');
+                resultBox.classList.remove('show');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-key"></i> Generate Pairing Code';
+            }
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const code = pairingCodeSpan.textContent;
+            if (!code) return;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('Copied to clipboard!', 'success');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => { copyBtn.innerHTML = originalText; }, 2000);
+            }).catch(err => {
+                showToast('Failed to copy. Please copy manually.', 'error');
+            });
+        });
+    </script>
+</body>
+</html>

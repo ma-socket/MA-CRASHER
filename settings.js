@@ -9,10 +9,6 @@ module.exports = {
     // =================== BIO ===================
     botBio: '⚡ MA CRASHER 2.0 - Ultimate WhatsApp Bot\n© MA Developers | Muhammad Ayan',
     
-    // =================== TELEGRAM ===================
-    telegramToken: '8947324505:AAFI9nVIp15_6ZqDDc9uxky520459OFpGws',
-    telegramChannel: 'https://t.me/ma_crasher_2_bot',
-    
     // =================== IMAGES ===================
     menuImage: 'https://i.postimg.cc/W3MK0wgJ/Chat-GPT-Image-Aug-26-2026-03-06-36-PM.png',
     ownerImage: 'https://i.postimg.cc/050FQZ89/Chat-GPT-Image-Aug-26-2026-03-07-12-PM.png',
